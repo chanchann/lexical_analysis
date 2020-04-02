@@ -12,9 +12,11 @@
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #include "token.h"
-
+#include "state.h"
 using namespace std;
 
 class Lexier{
@@ -25,18 +27,29 @@ public:
     bool startParseTokens();
 
 private:
-    bool enterDfa(string token, string& tokenCategory);
-    void startState(int& state, char next_char, string& tokenCategory);
-    void move(int& state, char next_char, string& tokenCategory);
     ifstream& getInput();
     ofstream& getOfstream();
+    int create_dir_not_exist(string path);
+    void handle(const std::string& src);
+    void handleState(const char c);
+    void initToken(const char c);
+
+private:
+    inline bool isAlpha(const char& c) {
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+            return true;
+        return false;
+    }
+    inline bool isDigital(const char& c) {
+        if (c >= '0' && c <= '9')
+            return true;
+        return false;
+    }
 
 private:
     string input_path;
     vector<Token*> token_list;
-    int keyword_move;
-    int state;
-
+    Dfstate state;
 };
 
 #endif //LEXICAL_ANALYSIS_LEXIER_H
