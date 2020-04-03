@@ -8,31 +8,30 @@
 
 #include <iostream>
 #include <string>
-#include "state.h"
+#include <unordered_map>
+#include "tokenType.h"
+
 using namespace std;
 class Token{
+    friend class Lexier;
 public:
     Token();
-    Token(string symbol, string category, int line_number);
     ~Token() {}
-    inline string getSymbol() const { return symbol; }
-    inline string getCatergory() const { return category; }
-    inline string getToken() const { return token; }
-    inline string getType() const { return type; }
-    inline int getLineNumber() const { return line_number; };
-    inline int getScope() const { return scope; }
+    inline string getText() const { return text; }
+    inline TokenType getType() const { return type; }
+    inline int getLineNumber() const { return line_number; }
+    inline string getStateStr(const TokenType& key) const { return tagLexemeMap_.at(key);}
 
-    void setType(TokenType& type);
-    void setScope(int scope);
+    inline void setType(const TokenType& type) { this->type = type; };
+    inline void setText(const string& text) { this->text = text; }
+    inline void setLineNumber(const int lineNumber) { this->line_number = lineNumber; }
 
 private:
-    string symbol;
-    string token;
+    string text;
     TokenType type;
-    string category;
-    int scope;
     int line_number;
-
+    static const unordered_map<enum TokenType, string> kwTypeMap_;
+    static const unordered_map<TokenType, string> tagLexemeMap_;
 };
 
 

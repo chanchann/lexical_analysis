@@ -1,22 +1,35 @@
 //
-// Created by Frank on 2020-03-31.
+// Created by Frank on 2020-04-03.
 //
 
 #include "token.h"
 
-Token::Token(string symbol, string category, int line_number)
-    :symbol(symbol), category(category),line_number(line_number){
-    if(category.compare("Identifier") == 0) {
-        token = "id";
-    }else{
-        token = category;
-    }
-}
+const unordered_map<enum TokenType, string> kwTypeMap_ {
+        {TokenType::If, "IF"},
+        {TokenType::Else, "ELSE"},
+        {TokenType::Int, "INT"},
+};
 
-void Token::setType(string type){
-    this->type = type;
-}
+const unordered_map<TokenType, string> tagLexemeMap_{
+        {TokenType::Plus, "plus : +"},   // +
+        {TokenType::Minus, "minus : -"}, // -
+        {TokenType::Star, "star : *"},  // *
+        {TokenType::Slash, "slash : /"}, //
+        {TokenType::GE, "GE : >="},     // >=
+        {TokenType::GT, "GT : >"},     //
+        {TokenType::EQ, "EQ : =="},    // ==
+        {TokenType::LE, "LE : <="},     // <=
+        {TokenType::LT, "LT : <"},     // <
+        {TokenType::SemiColon, "semicolon : ;"}, // ;
+        {TokenType::LeftParen, "leftparen : ("}, // (
+        {TokenType::RightParen, "rightparen : )"},// )
+        {TokenType::Assignment, "assignment : ="},// =
+        // 关键词
+        {TokenType::If, "keywords: if"},
+        {TokenType::Else, "keywords: else"},
+        {TokenType::Int, "keywords : int"},
 
-void Token::setScope(int scope){
-    this->scope = scope;
-}
+        {TokenType::Identifier, "indentifier"},     //标识符
+        {TokenType::IntLiteral, "intLiteral" },   //整型字面量
+        {TokenType::StringLiteral, "stringLiteral"} //字符串字面量
+};
