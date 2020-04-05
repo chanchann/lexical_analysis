@@ -2,10 +2,10 @@
 // Created by Frank on 2020-03-31.
 //
 
-#include "lexier.h"
+#include "lexier.hpp"
 
 Lexier::Lexier(string input_path)
-    :input_path(input_path) {}
+    :input_path(input_path),token(new Token()) {}
 
 Lexier::~Lexier() {
     //vector中存储了对象的指针，调用clear后，并不会调用这些指针所指对象析构函数，因此要在clear之前调用delete；
@@ -28,7 +28,9 @@ bool Lexier::startParseTokens() {
         // output the line number
 //        output << right <<  "Line" <<  setw(4) << line_number << " :" << endl;
         cout << "Line" << line_number << ":" << endl;
+        line.push_back('\n'); // 添加个结束符结尾
         handle(line);
+
         line_number += 1;
     }
 
@@ -94,6 +96,7 @@ vector<Token*>& Lexier::getTokenList(){
 }
 
 void Lexier::handle(const std::string& src){
+
     for (int i = 0; i < src.length(); i++) {
         handleState(src[i]);
     }
@@ -138,15 +141,27 @@ void Lexier::handleState(const char c){
                 initToken(c);  //退出当前状态，并保存Token
             }
             break;
-        case Id_int1:
+        case Id_int_if1:  // i
             if (c == 'n') {    // in
                 state = Dfstate::Id_int2;
                 tokenText.push_back(c);
-            } else if (isDigital(c) || isAlpha(c)) {
+            } else if (c == 'f'){ // if
+                state = Dfstate::Id_if2;
+                tokenText.push_back(c);
+            }else if (isDigital(c) || isAlpha(c)) {
                 state = Dfstate::Id;    //切换回Id状态
                 tokenText.push_back(c);
             } else {
                 initToken(c);
+            }
+            break;
+        case Id_if2:
+            if(isBlank(c) || c == '('){
+                token->setType(TokenType::If);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
             }
             break;
         case Id_int2:
@@ -160,9 +175,8 @@ void Lexier::handleState(const char c){
                 initToken(c);
             }
             break;
-        case Id_int3:
+        case Id_int3:  // int
             if (isBlank(c)) {
-                // TODO:增添 keyword标识
                 token->setType(TokenType::Int);
                 initToken(c);
             } else {
@@ -172,8 +186,6 @@ void Lexier::handleState(const char c){
             break;
 //        default: //这里如何处理？
     }
-    //把最后一个token送进去
-    if(tokenText.length() > 0) initToken(c);
 
 }
 
@@ -183,9 +195,9 @@ void Lexier::initToken(const char c) {
         token->setText(tokenText);
         token->setLineNumber(line_number);
         token_list.push_back(token);
-
+        cout << token->getStateStr(token->getType()) << ":" << token->getText() << endl;
         tokenText.clear();
-//        token = new Token;
+        token = new Token();  // need to check
 
     }
 
@@ -193,7 +205,7 @@ void Lexier::initToken(const char c) {
 
     if (isAlpha(c)) {    // 第一个字符是字母
         if(c == 'i'){   //第一个字符是i
-            state = Dfstate::Id_int1;
+            state = Dfstate::Id_int_if1;
         }else{
             state = Dfstate::Id;
         }
@@ -228,6 +240,8 @@ void Lexier::initToken(const char c) {
     } else if (c == '='){
         state = Dfstate::Assignment;
         token->setType(TokenType::Assignment);
+    }else if(c == '\n'){
+        return;
     }
     else {
         state = Dfstate::Initial; // skip all unknown patterns
