@@ -1,8 +1,14 @@
 int main()
-if (a=2)
+if (float a=2)
     if(true)
-char
+        else
+            else{}
+while()
+    break;
+    while
+
 return
+return;
 else
     while
         break

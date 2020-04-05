@@ -23,11 +23,19 @@ const unordered_map<TokenType, string> Token::tagLexemeMap_{
         {TokenType::SemiColon, "semicolon< ; >"}, // ;
         {TokenType::LeftParen, "leftparen< ( >"}, // (
         {TokenType::RightParen, "rightparen< ) >"},// )
+        {TokenType::BigLeftParen, "bigleftparen< { >"}, // (
+        {TokenType::BigRightParen, "bigrightparen< } >"},// )
+
         {TokenType::Assignment, "assignment< = >"},// =
         // 关键词
         {TokenType::If, "keywords<if>"},
         {TokenType::Else, "keywords<else>"},
         {TokenType::Int, "keywords<int>"},
+        {TokenType::While, "keywords<while>"},
+        {TokenType::Float, "keywords<float>"},
+        {TokenType::Return, "keywords<return>"},
+        {TokenType::Break, "keywords<break>"},
+        {TokenType::Main, "keywords<main>"},
 
         {TokenType::Identifier, "indentifier"},     //标识符
         {TokenType::IntLiteral, "intLiteral" },   //整型字面量

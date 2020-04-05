@@ -123,15 +123,17 @@ void Lexier::handleState(const char c){
                 initToken(c);  // 退出标识符状态，并保存Token
             }
             break;
-        case GE:  // >=
-        case Assignment:  // =
-        case Plus: // +
-        case Minus: // -
-        case Star: // *
-        case Slash: // /
-        case SemiColon: // ;
-        case LeftParen: // (
-        case RightParen: // )
+        case Dfstate::GE:  // >=
+        case Dfstate::Assignment:  // =
+        case Dfstate::Plus: // +
+        case Dfstate::Minus: // -
+        case Dfstate::Star: // *
+        case Dfstate::Slash: // /
+        case Dfstate::SemiColon: // ;
+        case Dfstate::LeftParen: // (
+        case Dfstate::RightParen: // )
+        case Dfstate::BigLeftParen: // {
+        case Dfstate::BigRightParen: // }
             initToken(c);   // 退出当前状态，并保存Token
             break;
         case IntLiteral:
@@ -184,6 +186,313 @@ void Lexier::handleState(const char c){
                 tokenText.push_back(c);
             }
             break;
+        case Id_else1:  // e
+            if (c == 'l'){  //el
+                state = Dfstate::Id_else2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_else2:
+            if(c == 's'){  // els
+                state = Dfstate::Id_else3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_else3:
+            if(c == 'e') { // else
+                state = Dfstate::Id_else4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_else4:
+            if(isBlank(c) || c == '{'){
+                token->setType(TokenType::Else);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
+        case Id_while1:  // w
+            if (c == 'h'){  // wh
+                state = Dfstate::Id_while2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_while2:  // wh
+            if (c == 'i'){  // whi
+                state = Dfstate::Id_while3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_while3:  // whi
+            if (c == 'l'){  // whil
+                state = Dfstate::Id_while4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_while4:  // whil
+            if (c == 'e'){  // while
+                state = Dfstate::Id_while5;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_while5:
+            if(isBlank(c) || c == '('){
+                token->setType(TokenType::While);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
+        case Id_float1:  // f
+            if (c == 'l'){  // fl
+                state = Dfstate::Id_float2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_float2:  // fl
+            if (c == 'o'){  // flo
+                state = Dfstate::Id_float3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_float3:  // flo
+            if (c == 'a'){  // floa
+                state = Dfstate::Id_float4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_float4:  // floa
+            if (c == 't'){  // float
+                state = Dfstate::Id_float5;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_float5:
+            if(isBlank(c)){
+                token->setType(TokenType::Float);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
+        case Id_return1:  // r
+            if (c == 'e'){  // re
+                state = Dfstate::Id_return2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_return2:  // re
+            if (c == 't'){  // ret
+                state = Dfstate::Id_return3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_return3:  // ret
+            if (c == 'u'){  // retu
+                state = Dfstate::Id_return4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_return4:  // retu
+            if (c == 'r'){  // retur
+                state = Dfstate::Id_return5;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_return5:  // retur
+            if (c == 'n'){  // return
+                state = Dfstate::Id_return6;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_return6:
+            if(c == ';' || isBlank(c)){
+                token->setType(TokenType::Return);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
+        case Id_break1:  // b
+            if (c == 'r'){  // br
+                state = Dfstate::Id_break2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_break2:  // br
+            if (c == 'e'){  // bre
+                state = Dfstate::Id_break3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_break3:  // bre
+            if (c == 'a'){  // brea
+                state = Dfstate::Id_break4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_break4:  // brea
+            if (c == 'k'){  // break
+                state = Dfstate::Id_break5;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_break5:  // break
+            if(c == ';' || isBlank(c)){
+                token->setType(TokenType::Break);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
+        case Id_main1:  // m
+            if (c == 'a'){  // ma
+                state = Dfstate::Id_main2;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_main2:  // ma
+            if (c == 'i'){  // mai
+                state = Dfstate::Id_main3;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_main3:  // mai
+            if (c == 'n'){  // main
+                state = Dfstate::Id_main4;
+                tokenText.push_back(c);
+            }else if(isDigital(c) || isAlpha(c)){
+                state = Dfstate::Id;   // 切回Id状态
+                tokenText.push_back(c);
+            }else{
+                initToken(c);
+            }
+            break;
+        case Id_main4:  // main
+            if(c == '(' || isBlank(c)){
+                token->setType(TokenType::Main);
+                initToken(c);
+            } else {
+                state = Dfstate::Id; //切回Id状态
+                tokenText.push_back(c);
+            }
+            break;
 //        default: //这里如何处理？
     }
 
@@ -206,6 +515,18 @@ void Lexier::initToken(const char c) {
     if (isAlpha(c)) {    // 第一个字符是字母
         if(c == 'i'){   //第一个字符是i
             state = Dfstate::Id_int_if1;
+        } else if(c == 'e'){
+            state = Dfstate::Id_else1;
+        } else if(c == 'w'){
+            state = Dfstate::Id_while1;
+        } else if(c == 'f'){
+            state = Dfstate::Id_float1;
+        } else if(c == 'r'){
+            state = Dfstate::Id_return1;
+        } else if(c == 'b'){
+            state = Dfstate::Id_break1;
+        } else if(c == 'm'){
+            state = Dfstate::Id_main1;
         }else{
             state = Dfstate::Id;
         }
@@ -237,7 +558,13 @@ void Lexier::initToken(const char c) {
     } else if (c == ')'){
         state = Dfstate::RightParen;
         token->setType(TokenType::RightParen);
-    } else if (c == '='){
+    } else if (c == '{') {
+        state = Dfstate::BigLeftParen;
+        token->setType(TokenType::BigLeftParen);
+    } else if (c == '}') {
+        state = Dfstate::BigRightParen;
+        token->setType(TokenType::BigRightParen);
+    }else if (c == '='){
         state = Dfstate::Assignment;
         token->setType(TokenType::Assignment);
     }else if(c == '\n'){
