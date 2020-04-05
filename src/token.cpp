@@ -11,22 +11,24 @@ const unordered_map<enum TokenType, string> Token::kwTypeMap_ {
 };
 
 const unordered_map<TokenType, string> Token::tagLexemeMap_{
-        {TokenType::Plus, "plus< + >"},   // +
-        {TokenType::Minus, "minus< - >"}, // -
-        {TokenType::Star, "star< * >"},  // *
-        {TokenType::Slash, "slash< / >"}, //
-        {TokenType::GE, "GE< >= >"},     // >=
-        {TokenType::GT, "GT< > >"},     //
-        {TokenType::EQ, "EQ< == >"},    // ==
-        {TokenType::LE, "LE< <= >"},     // <=
-        {TokenType::LT, "LT< < >"},     // <
-        {TokenType::SemiColon, "semicolon< ; >"}, // ;
-        {TokenType::LeftParen, "leftparen< ( >"}, // (
-        {TokenType::RightParen, "rightparen< ) >"},// )
-        {TokenType::BigLeftParen, "bigleftparen< { >"}, // (
-        {TokenType::BigRightParen, "bigrightparen< } >"},// )
+        {TokenType::Plus, "operator< + >"},   // +
+        {TokenType::Minus, "operator< - >"}, // -
+        {TokenType::Star, "operator< * >"},  // *
+        {TokenType::Slash, "operator< / >"}, //
+        {TokenType::GE, "operator< >= >"},     // >=
+        {TokenType::GT, "operator< > >"},     //
+        {TokenType::EQ, "operator< == >"},    // ==
+        {TokenType::LE, "operator< <= >"},     // <=
+        {TokenType::LT, "operator< < >"},     // <
+        {TokenType::Assignment, "operator< = >"},// =
 
-        {TokenType::Assignment, "assignment< = >"},// =
+        // delimiter 限界符
+        {TokenType::SemiColon, "delimiter< ; >"}, // ;
+        {TokenType::LeftParen, "delimiter< ( >"}, // (
+        {TokenType::RightParen, "delimiter< ) >"},// )
+        {TokenType::BigLeftParen, "delimiter< { >"}, // (
+        {TokenType::BigRightParen, "delimiter< } >"},// )
+
         // 关键词
         {TokenType::If, "keywords<if>"},
         {TokenType::Else, "keywords<else>"},
@@ -39,6 +41,8 @@ const unordered_map<TokenType, string> Token::tagLexemeMap_{
 
         {TokenType::Identifier, "indentifier"},     //标识符
         {TokenType::IntLiteral, "intLiteral" },   //整型字面量
+        {TokenType::FloatLiteral, "floatLiteral" },   //浮点型字面量
+        {TokenType::ScienceLiteral, "scienceLiteral" },   //科学计数法
         {TokenType::StringLiteral, "stringLiteral"} //字符串字面量
 };
 

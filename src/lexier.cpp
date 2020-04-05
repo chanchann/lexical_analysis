@@ -108,7 +108,7 @@ void Lexier::handleState(const char c){
             initToken(c);  // 重新确定后续状态
             break;
         case Dfstate::Id:
-            if (isAlpha(c) || isDigital(c)) {
+            if (isAlpha(c) || isDigital(c) || c == '_') {
                 tokenText.push_back(c);  // 保持标识符状态
             } else {
                 initToken(c);   // 退出标识符状态，并保存Token
@@ -136,11 +136,57 @@ void Lexier::handleState(const char c){
         case Dfstate::BigRightParen: // }
             initToken(c);   // 退出当前状态，并保存Token
             break;
-        case IntLiteral:
+        case Dfstate::IntLiteral:
             if (isDigital(c)) {
                 tokenText.push_back(c);  //继续保持在数字字面量状态
-            } else {
+            } else if(c == '.'){
+                tokenText.push_back(c);
+                state = Dfstate::FloatLiteral;
+                token->setType(TokenType::FloatLiteral);
+            } else if(c == ')' || c == ';'){
                 initToken(c);  //退出当前状态，并保存Token
+            } else if(c == 'e' || c == 'E') {
+                tokenText.push_back(c);
+                state = Dfstate::ScienceLiteral1;
+                token->setType(TokenType::ScienceLiteral);
+            }else {
+                tokenText.push_back(c);
+                cerr << "Invalid token :" << tokenText << endl;
+                exit(1);
+//                initToken(c);  //退出当前状态，并保存Token
+            }
+            break;
+        case Dfstate::ScienceLiteral1:
+            if(c == '-' || c == '+' || isDigital(c)){
+                state = Dfstate::ScienceLiteral;
+                tokenText.push_back(c);
+            }else {
+                tokenText.push_back(c);
+                cerr << "Invalid token : " << tokenText << endl;
+                exit(1);
+            }
+            break;
+        case Dfstate::ScienceLiteral:
+            if(isDigital(c)){
+                tokenText.push_back(c);
+            } else if(isBlank(c)|| c == ';' || c == ')' || c == ','){
+                initToken(c);
+            } else{
+                tokenText.push_back(c);
+                cerr << "Invalid token1 : " << tokenText << endl;
+                exit(1);
+            }
+            break;
+
+        case Dfstate::FloatLiteral:
+            if (isDigital(c)) {
+                tokenText.push_back(c);  //继续保持在浮点数字面量状态
+            } else if(c == 'e' || c == 'E') {
+                tokenText.push_back(c);
+                state = Dfstate::ScienceLiteral1;
+                token->setType(TokenType::ScienceLiteral);
+            }else {
+                initToken(c);  // 退出当前状态，并保存Token
             }
             break;
         case Id_int_if1:  // i
@@ -512,7 +558,7 @@ void Lexier::initToken(const char c) {
 
     state = Dfstate::Initial;
 
-    if (isAlpha(c)) {    // 第一个字符是字母
+    if (isAlpha(c) || c == '_') {    // 第一个字符是字母或下划线
         if(c == 'i'){   //第一个字符是i
             state = Dfstate::Id_int_if1;
         } else if(c == 'e'){
