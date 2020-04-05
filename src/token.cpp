@@ -43,6 +43,13 @@ const unordered_map<TokenType, string> Token::tagLexemeMap_{
         {TokenType::IntLiteral, "intLiteral" },   //整型字面量
         {TokenType::FloatLiteral, "floatLiteral" },   //浮点型字面量
         {TokenType::ScienceLiteral, "scienceLiteral" },   //科学计数法
-        {TokenType::StringLiteral, "stringLiteral"} //字符串字面量
+        {TokenType::StringLiteral, "stringLiteral"}, //字符串字面量
+
+        // 进制
+        {TokenType::Binary, "Binary"},     //二进制
+        {TokenType::Octal, "Octal"},     //八进制
+        {TokenType::HexDecimal, "HexDecimal"},     //十六进制
+
+
 };
 
