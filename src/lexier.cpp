@@ -150,10 +150,7 @@ void Lexier::handleState(const char c){
                 state = Dfstate::ScienceLiteral1;
                 token->setType(TokenType::ScienceLiteral);
             }else {
-                tokenText.push_back(c);
-                cerr << "Invalid token :" << tokenText << endl;
-                exit(1);
-//                initToken(c);  //退出当前状态，并保存Token
+                errFunc(tokenText, c);
             }
             break;
         case Dfstate::ScienceLiteral1:
@@ -161,9 +158,7 @@ void Lexier::handleState(const char c){
                 state = Dfstate::ScienceLiteral;
                 tokenText.push_back(c);
             }else {
-                tokenText.push_back(c);
-                cerr << "Invalid token : " << tokenText << endl;
-                exit(1);
+                errFunc(tokenText, c);
             }
             break;
         case Dfstate::ScienceLiteral:
@@ -172,9 +167,7 @@ void Lexier::handleState(const char c){
             } else if(isBlank(c)|| c == ';' || c == ')' || c == ','){
                 initToken(c);
             } else{
-                tokenText.push_back(c);
-                cerr << "Invalid token1 : " << tokenText << endl;
-                exit(1);
+                errFunc(tokenText, c);
             }
             break;
 
@@ -553,9 +546,7 @@ void Lexier::handleState(const char c){
                 state = Dfstate::Oct2;
                 token->setType(TokenType::Octal);
             }else {
-                tokenText.push_back(c);
-                cerr << "Invalid Token : " << tokenText << endl;
-                exit(1);
+                errFunc(tokenText, c);
             }
             break;
         case Dfstate::Bin2:
