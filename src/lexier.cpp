@@ -600,13 +600,56 @@ void Lexier::handleState(const char c){
                 errFunc(tokenText, c);
             }
             break;
+            //TODO fix ' 情况
+        case Dfstate::charLiteral1:
+            if(c == '\''){
+                state = Dfstate::charLiteral2;
+            }else if(c == '\\'){  // 支持转义
+                state = Dfstate::charLiteral4;
+            }else{
+                state = Dfstate::charLiteral3;
+            }
+            tokenText.push_back(c);
+            break;
+        case Dfstate::charLiteral2:
+            initToken(c);
+            break;
+        case Dfstate::charLiteral3:
+            if(c == '\''){
+                tokenText.push_back(c);
+                state = Dfstate::charLiteral2;
+            }else{
+                cerr << "Line : " << line_number <<" charLiteral cannot contain too many bits" << endl;
+                exit(1);
+            }
+            break;
+        case Dfstate::charLiteral4:
+            if(c == 't' || c == 'b' || c == '\\'    // 目前只支持这么多转义
+            || c == '\'' || c == '\"' ||  c == 'n'){
+                tokenText.push_back(c);
+                state = Dfstate::charLiteral3;
+            }else{
+                cerr << "Line : " << line_number <<" charLiteral cannot contain too many bits" << endl;
+                exit(1);
+            }
+            break;
+        case Dfstate::stringLiteral1:
+            if(c == '\"'){
+                state = Dfstate::stringLiteral2;
+                tokenText.push_back(c);
+            }else{
+                tokenText.push_back(c);  //保持
+            }
+            break;
+        case Dfstate::stringLiteral2:
+            initToken(c);
+            break;
 //        default: //这里如何处理？
     }
 
 }
 
 void Lexier::initToken(const char c) {
-
     if(tokenText.length() > 0) {
         token->setText(tokenText);
         token->setLineNumber(line_number);
@@ -645,7 +688,6 @@ void Lexier::initToken(const char c) {
             state = Dfstate::IntLiteral;
             token->setType(TokenType::IntLiteral);
         }
-
     } else if (c == '>') {
         state = Dfstate::GT;
         token->setType(TokenType::GT);
@@ -679,6 +721,12 @@ void Lexier::initToken(const char c) {
     }else if (c == '='){
         state = Dfstate::Assignment;
         token->setType(TokenType::Assignment);
+    }else if(c == '\''){
+        state = Dfstate::charLiteral1;
+        token->setType(TokenType::CharLiteral);
+    }else if(c == '\"'){
+        state = Dfstate::stringLiteral1;
+        token->setType(TokenType::StringLiteral);
     }else if(c == '\n'){
         return;
     }

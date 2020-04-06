@@ -44,6 +44,7 @@ const unordered_map<TokenType, string> Token::tagLexemeMap_{
         {TokenType::FloatLiteral, "floatLiteral" },   //浮点型字面量
         {TokenType::ScienceLiteral, "scienceLiteral" },   //科学计数法
         {TokenType::StringLiteral, "stringLiteral"}, //字符串字面量
+        {TokenType::CharLiteral, "CharLiteral"}, //字符字面量
 
         // 进制
         {TokenType::Binary, "Binary"},     //二进制
