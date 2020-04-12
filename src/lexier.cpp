@@ -143,13 +143,13 @@ void Lexier::handleState(const char c){
                 tokenText.push_back(c);
                 state = Dfstate::FloatLiteral;
                 token->setType(TokenType::FloatLiteral);
-            } else if(c == ')' || c == ';'){
+            } else if(isBlank(c) || c == ')' || c == ';'){
                 initToken(c);  //退出当前状态，并保存Token
             } else if(c == 'e' || c == 'E') {
                 tokenText.push_back(c);
                 state = Dfstate::ScienceLiteral1;
                 token->setType(TokenType::ScienceLiteral);
-            }else {
+            }else {  // 2x
                 errFunc(tokenText, c);
             }
             break;
@@ -200,7 +200,7 @@ void Lexier::handleState(const char c){
             if(isBlank(c) || c == '('){
                 token->setType(TokenType::If);
                 initToken(c);
-            } else {
+            } else { // ifx
                 state = Dfstate::Id; //切回Id状态
                 tokenText.push_back(c);
             }
@@ -600,12 +600,13 @@ void Lexier::handleState(const char c){
                 errFunc(tokenText, c);
             }
             break;
-            //TODO fix ' 情况
         case Dfstate::charLiteral1:
             if(c == '\''){
                 state = Dfstate::charLiteral2;
             }else if(c == '\\'){  // 支持转义
                 state = Dfstate::charLiteral4;
+            }else if(c == '\n'){
+                errFunc(tokenText, c);
             }else{
                 state = Dfstate::charLiteral3;
             }
@@ -637,6 +638,8 @@ void Lexier::handleState(const char c){
             if(c == '\"'){
                 state = Dfstate::stringLiteral2;
                 tokenText.push_back(c);
+            }else if(c == '\n'){
+                errFunc(tokenText, c);
             }else{
                 tokenText.push_back(c);  //保持
             }
@@ -657,7 +660,6 @@ void Lexier::initToken(const char c) {
         cout << token->getStateStr(token->getType()) << ":" << token->getText() << endl;
         tokenText.clear();
         token = new Token();  // need to check
-
     }
 
     state = Dfstate::Initial;
